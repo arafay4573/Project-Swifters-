@@ -1,48 +1,36 @@
 const mongoose = require('mongoose');
 
-const storySchema = new mongoose.Schema({
-  userId: {
+const StorySchema = new mongoose.Schema({
+  childProfileId: {
     type: mongoose.Schema.Types.ObjectId,
+    ref: 'ChildProfile',
     required: true,
-    ref: 'User',
   },
-  childName: {
+  title: {
     type: String,
     required: true,
   },
-  age: {
-    type: Number,
-    required: true,
-  },
-  gender: {
-    type: String,
-    required: true,
-  },
-  interests: {
-    type: [String],
-    required: true,
-  },
-  mood: {
-    type: String,
-    required: true,
-  },
-  storyText: {
-    type: String,
-    required: true,
-  },
-  moral: {
+  content: [{
+    paragraph: { type: String, required: true },
+    audioUrl: { type: String, required: true },
+    animationUrl: { type: String },
+  }],
+  quiz: [{
+    question: { type: String },
+    options: [{ type: String }],
+    correctAnswer: { type: String },
+  }],
+  moralLesson: {
     type: String,
   },
-  audioUrl: {
-    type: String,
+  isFacelessMode: {
+    type: Boolean,
+    default: false,
   },
-  videoUrl: {
-    type: String,
+  createdAt: {
+    type: Date,
+    default: Date.now,
   },
-}, {
-  timestamps: true,
 });
 
-const Story = mongoose.model('Story', storySchema);
-
-module.exports = Story;
+module.exports = mongoose.model('Story', StorySchema);

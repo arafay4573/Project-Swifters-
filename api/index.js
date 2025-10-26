@@ -1,32 +1,23 @@
 const express = require('express');
-const dotenv = require('dotenv');
 const cors = require('cors');
 const connectDB = require('./config/db');
-const authRoutes = require('./routes/authRoutes');
-const storyRoutes = require('./routes/storyRoutes');
-const audioRoutes = require('./routes/audioRoutes');
-const videoRoutes = require('./routes/videoRoutes');
-const stripeRoutes = require('./routes/stripeRoutes');
-
-dotenv.config();
-
-const app = express();
+require('dotenv').config();
 
 // Connect to database
 connectDB();
+
+const app = express();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
-app.use('/api/auth', authRoutes);
-app.use('/api/stories', storyRoutes);
-app.use('/api/audio', audioRoutes);
-app.use('/api/video', videoRoutes);
-app.use('/api/stripe', stripeRoutes);
+// Define Routes
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/profiles', require('./routes/profiles'));
 
-app.get('/', (req, res) => {
-  res.send('Welcome to Project Swifters API');
+app.get('/api', (req, res) => {
+  res.send('Backend server is running.');
 });
 
 module.exports = app;
