@@ -22,6 +22,19 @@ const StorySchema = new mongoose.Schema({
   thumbnailUrl: {
     type: String,
   },
+  quizQuestions: [
+    {
+      question: String,
+      options: [String],
+      correctAnswer: String,
+    },
+  ],
+  quizAnswers: [
+    {
+      questionIndex: Number,
+      answer: String,
+    },
+  ],
   createdAt: {
     type: Date,
     default: Date.now,

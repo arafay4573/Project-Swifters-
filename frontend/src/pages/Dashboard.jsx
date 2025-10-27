@@ -2,33 +2,50 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import AuthContext from '../context/AuthContext';
 import { Link } from 'react-router-dom';
-import { RefreshCw, Play, Settings } from 'lucide-react';
+import { BookOpen, Target, Clock, Settings, Play } from 'lucide-react';
+
+const ProgressBar = ({ value, max, label, icon }) => (
+    <div>
+        <div className="flex items-center justify-between mb-1">
+            <span className="flex items-center text-sm font-medium text-text-sub">
+                {icon}
+                <span className="ml-2">{label}</span>
+            </span>
+            <span className="text-sm font-bold text-primary">{`${value} / ${max}`}</span>
+        </div>
+        <div className="w-full bg-gray-700 rounded-full h-2.5">
+            <div className="bg-primary h-2.5 rounded-full" style={{ width: `${(value / max) * 100}%` }}></div>
+        </div>
+    </div>
+);
 
 const Dashboard = () => {
   const [stories, setStories] = useState([]);
   const [profiles, setProfiles] = useState([]);
+  const [analytics, setAnalytics] = useState([]);
   const [showStoryModal, setShowStoryModal] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const { user } = useContext(AuthContext);
 
   const fetchData = async () => {
+    if (!user) return;
     try {
       const config = { headers: { 'x-auth-token': user.token } };
-      const [storiesRes, profilesRes] = await Promise.all([
+      const [storiesRes, profilesRes, analyticsRes] = await Promise.all([
         axios.get('/api/stories', config),
         axios.get('/api/profiles', config),
+        axios.get('/api/analytics/summary', config)
       ]);
       setStories(storiesRes.data);
       setProfiles(profilesRes.data);
+      setAnalytics(analyticsRes.data);
     } catch (error) {
-      console.error(error);
+      console.error('Error fetching dashboard data:', error);
     }
   };
 
   useEffect(() => {
-    if (user) {
-      fetchData();
-    }
+    fetchData();
   }, [user]);
 
   const handleGenerateStory = async (childId) => {
@@ -55,6 +72,23 @@ const Dashboard = () => {
 
   return (
     <div>
+      {/* Analytics Section */}
+      <div className="mb-12">
+        <h1 className="text-3xl font-bold text-primary mb-6">Child Progress</h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {analytics.map(child => (
+            <div key={child.childId} className="bg-card-bg p-6 rounded-lg shadow-lg">
+              <h2 className="text-2xl font-bold text-accent mb-4">{child.name}</h2>
+              <div className="space-y-4">
+                <ProgressBar value={child.totalStoriesRead} max={50} label="Stories Read" icon={<BookOpen size={16} />} />
+                <ProgressBar value={child.averageQuizScore} max={10} label="Avg. Quiz Score" icon={<Target size={16} />} />
+                <ProgressBar value={child.totalScreenTime} max={120} label="Screen Time (mins)" icon={<Clock size={16} />} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-primary">Your Stories</h1>
         <div>

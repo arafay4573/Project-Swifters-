@@ -24,6 +24,22 @@ const ChildProfileSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  totalStoriesRead: {
+    type: Number,
+    default: 0,
+  },
+  totalQuizScore: {
+    type: Number,
+    default: 0,
+  },
+  totalScreenTime: {
+    type: Number,
+    default: 0,
+  },
+  lastActive: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 module.exports = mongoose.model('ChildProfile', ChildProfileSchema);

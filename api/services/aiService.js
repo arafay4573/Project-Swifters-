@@ -8,12 +8,17 @@ const generateStory = async (childData, facelessMode = false) => {
   if (!openai) {
     console.log('OpenAI API key not found. Falling back to mock story generation.');
     return {
-      storyText: `This is a mock story about a brave child named ${childData.name} who loves ${childData.preferences.animal || 'animals'}. One day, ${childData.name} went on an adventure and discovered a hidden treasure.`,
+      storyText: `This is a mock story about a brave child named ${childData.name} who loves ${childData.preferences.animal || 'animals'}. One day, ${childData.name} went on an adventure and discovered a hidden treasure. The treasure was a magical book.`,
       moral: "The moral of this mock story is that bravery and kindness always lead to wonderful discoveries.",
+      quizQuestions: [
+        { question: "What did the child find?", options: ["A magical book", "A lost puppy", "A shiny rock", "A bag of candy"], correctAnswer: "A magical book" },
+        { question: "What is the child's name?", options: [childData.name, "Alex", "Sam", "Charlie"], correctAnswer: childData.name },
+        { question: "What does the child love?", options: [childData.preferences.animal || 'animals', "Playing video games", "Watching TV", "Sleeping"], correctAnswer: childData.preferences.animal || 'animals' },
+      ],
     };
   }
 
-  let prompt = `Create a short, engaging, and educational children's story about a child named ${childData.name}, who is ${childData.age} years old and loves ${childData.preferences.animal || 'adventure'}. The story should have a clear moral lesson at the end. Format the output as a JSON object with two keys: "storyText" and "moral".`;
+  let prompt = `Create a short, engaging, and educational children's story for a child named ${childData.name}, who is ${childData.age} years old and loves ${childData.preferences.animal || 'adventure'}. After the story, provide a clear moral lesson. Finally, create a 3-question multiple-choice quiz based on the story's content. The output must be a single JSON object with three keys: "storyText", "moral", and "quizQuestions". The "quizQuestions" key should be an array of objects, where each object has three keys: "question" (string), "options" (an array of 4 strings), and "correctAnswer" (the exact string from the options array that is correct).`;
 
   if (facelessMode) {
     prompt += ` The story should be suitable for illustrations where characters have no facial features, in line with Islamic artistic traditions.`;
@@ -32,6 +37,11 @@ const generateStory = async (childData, facelessMode = false) => {
     return {
       storyText: `A mock story for ${childData.name}.`,
       moral: "A mock moral.",
+      quizQuestions: [
+        { question: "Mock Question 1?", options: ["A", "B", "C", "D"], correctAnswer: "A" },
+        { question: "Mock Question 2?", options: ["A", "B", "C", "D"], correctAnswer: "B" },
+        { question: "Mock Question 3?", options: ["A", "B", "C", "D"], correctAnswer: "C" },
+      ],
     };
   }
 };
