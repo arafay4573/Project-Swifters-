@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import AuthContext from '../context/AuthContext';
+import { motion } from 'framer-motion';
 
 const StoryPlayer = () => {
   const { id } = useParams();
@@ -11,11 +12,7 @@ const StoryPlayer = () => {
   useEffect(() => {
     const fetchStory = async () => {
       try {
-        const config = {
-          headers: {
-            'x-auth-token': user.token,
-          },
-        };
+        const config = { headers: { 'x-auth-token': user.token } };
         const { data } = await axios.get(`/api/stories/${id}`, config);
         setStory(data);
       } catch (error) {
@@ -32,20 +29,43 @@ const StoryPlayer = () => {
     return <div>Loading...</div>;
   }
 
+  const paragraphs = story.storyText.split('\\n');
+
   return (
     <div className="max-w-4xl mx-auto p-4">
       <h1 className="text-4xl font-bold text-center mb-8 text-primary">{story.childId.name}'s Adventure</h1>
 
-      <div className="aspect-video bg-black rounded-lg mb-8">
-        {/* Placeholder for animation/video */}
+      <div className="aspect-video bg-black rounded-lg mb-8 shadow-lg">
         <video key={story.animationUrl} controls className="w-full h-full" src={story.animationUrl}>
            Your browser does not support the video tag.
         </video>
       </div>
 
       <div className="bg-card-bg p-6 rounded-lg shadow-lg mb-8">
-        <h2 className="text-2xl font-bold mb-4">Story Text</h2>
-        <p className="text-text-sub leading-relaxed">{story.storyText}</p>
+        <h2 className="text-2xl font-bold mb-4">Story</h2>
+        {paragraphs.map((para, index) => (
+          <motion.p
+            key={index}
+            className="text-text-sub leading-relaxed mb-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: index * 0.5 }}
+          >
+            {para}
+          </motion.p>
+        ))}
+      </div>
+
+       <div className="bg-card-bg p-6 rounded-lg shadow-lg mb-8">
+        <h2 className="text-2xl font-bold mb-4">Moral of the Story</h2>
+        <motion.p
+            className="text-text-sub leading-relaxed"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: paragraphs.length * 0.5 }}
+        >
+            {story.moral}
+        </motion.p>
       </div>
 
       <div className="bg-card-bg p-6 rounded-lg shadow-lg">

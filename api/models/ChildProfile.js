@@ -20,6 +20,10 @@ const ChildProfileSchema = new mongoose.Schema({
   photoUrl: {
     type: String,
   },
+  facelessMode: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 module.exports = mongoose.model('ChildProfile', ChildProfileSchema);

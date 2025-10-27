@@ -10,10 +10,16 @@ const StorySchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  moral: {
+    type: String,
+  },
   audioUrl: {
     type: String,
   },
   animationUrl: {
+    type: String,
+  },
+  thumbnailUrl: {
     type: String,
   },
   createdAt: {

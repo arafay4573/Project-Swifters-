@@ -10,15 +10,17 @@ exports.generateStory = async (req, res) => {
       return res.status(404).json({ msg: 'Child profile not found' });
     }
 
-    const { storyText } = await aiService.generateStory(childProfile);
+    const { storyText, moral } = await aiService.generateStory(childProfile, childProfile.facelessMode);
     const { audioUrl } = await aiService.generateVoice(storyText);
-    const { animationUrl } = await aiService.generateAnimation(storyText);
+    const { animationUrl, thumbnailUrl } = await aiService.generateAnimation(storyText, childProfile.facelessMode);
 
     const newStory = new Story({
       childId,
       storyText,
+      moral,
       audioUrl,
       animationUrl,
+      thumbnailUrl,
     });
 
     const story = await newStory.save();

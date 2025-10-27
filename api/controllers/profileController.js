@@ -30,9 +30,9 @@ exports.getProfiles = async (req, res) => {
 };
 
 exports.updateProfile = async (req, res) => {
-  const { name, age, preferences } = req.body;
+  const { name, age, preferences, facelessMode } = req.body;
 
-  const profileFields = { name, age, preferences };
+  const profileFields = { name, age, preferences, facelessMode };
 
   try {
     let profile = await ChildProfile.findById(req.params.id);
