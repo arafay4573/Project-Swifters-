@@ -13,7 +13,7 @@ const Dashboard = () => {
       try {
         const config = {
           headers: {
-            Authorization: `Bearer ${user.token}`,
+            'x-auth-token': user.token,
           },
         };
         const { data } = await axios.get('/api/stories', config);
@@ -37,7 +37,7 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {stories.map((story) => (
             <div key={story._id} className="bg-card-bg p-6 rounded-lg shadow-lg">
-              <h2 className="text-xl font-bold mb-2">{story.childName}'s Story</h2>
+              <h2 className="text-xl font-bold mb-2">{story.childId.name}'s Story</h2>
               <p className="text-text-sub text-sm mb-4">
                 {new Date(story.createdAt).toLocaleDateString()}
               </p>
