@@ -1,112 +1,66 @@
 const Story = require('../models/Story');
-const ChildProfile = require('../models/ChildProfile');
-const aiService = require('../services/aiService');
+const OpenAI = require('openai');
 
-exports.generateStory = async (req, res) => {
-  const { childId } = req.body;
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+// @desc    Generate a new story
+// @route   POST /api/stories/generate-story
+// @access  Private
+const generateStory = async (req, res) => {
+  const { childName, age, gender, interests, mood } = req.body;
+
   try {
-    const childProfile = await ChildProfile.findById(childId);
-    if (!childProfile) {
-      return res.status(404).json({ msg: 'Child profile not found' });
-    }
+    // In a real application, you would call an AI API here.
+    // For now, we'll just generate a placeholder story.
+    const storyText = `Once upon a time, in a magical land, there lived a brave ${gender} named ${childName}. ${childName} was ${age} years old and loved ${interests.join(', ')}. One day, ${childName} went on a ${mood} adventure and discovered a hidden treasure.`;
+    const moral = "The moral of the story is to always be brave and kind.";
 
-    const { storyText, moral, quizQuestions } = await aiService.generateStory(childProfile, childProfile.facelessMode);
-    const { audioUrl } = await aiService.generateVoice(storyText);
-    const { animationUrl, thumbnailUrl } = await aiService.generateAnimation(storyText, childProfile.facelessMode);
+    res.json({ storyText, moral });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
-    const newStory = new Story({
-      childId,
+// @desc    Save a story
+// @route   POST /api/stories/save-story
+// @access  Private
+const saveStory = async (req, res) => {
+  const { childName, age, gender, interests, mood, storyText, moral, audioUrl, videoUrl } = req.body;
+
+  try {
+    const story = new Story({
+      userId: req.user._id,
+      childName,
+      age,
+      gender,
+      interests,
+      mood,
       storyText,
       moral,
-      quizQuestions,
       audioUrl,
-      animationUrl,
-      thumbnailUrl,
+      videoUrl,
     });
 
-    const story = await newStory.save();
-    res.json(story);
-
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
+    const createdStory = await story.save();
+    res.status(201).json(createdStory);
+  } catch (error)
+ {
+    res.status(500).json({ message: error.message });
   }
 };
 
-// @route   POST /api/stories/:id/quiz
-// @desc    Submit quiz answers for a story
+// @desc    Get all stories for a user
+// @route   GET /api/stories
 // @access  Private
-exports.submitQuiz = async (req, res) => {
+const getStories = async (req, res) => {
   try {
-    const story = await Story.findById(req.params.id);
-    if (!story) {
-      return res.status(404).json({ msg: 'Story not found' });
-    }
-
-    const { answers } = req.body; // Expecting an array of strings
-    let score = 0;
-    const submittedAnswers = [];
-
-    story.quizQuestions.forEach((question, index) => {
-      if (answers[index] && answers[index].toLowerCase() === question.correctAnswer.toLowerCase()) {
-        score++;
-      }
-      submittedAnswers.push({
-        questionIndex: index,
-        answer: answers[index] || 'Not answered',
-      });
-    });
-
-    story.quizAnswers = submittedAnswers;
-    await story.save();
-
-    const childProfile = await ChildProfile.findById(story.childId);
-    if (childProfile) {
-      childProfile.totalQuizScore += score;
-      await childProfile.save();
-    }
-
-    res.json({ score, totalQuestions: story.quizQuestions.length });
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
-  }
-};
-
-exports.getStories = async (req, res) => {
-  try {
-    const profiles = await ChildProfile.find({ parentId: req.user.id });
-    const profileIds = profiles.map(p => p._id);
-
-    const stories = await Story.find({ childId: { $in: profileIds } })
-      .populate('childId', ['name'])
-      .sort({ createdAt: -1 });
-
+    const stories = await Story.find({ userId: req.user._id });
     res.json(stories);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
-exports.getStoryById = async (req, res) => {
-  try {
-    const story = await Story.findById(req.params.id).populate('childId', ['name']);
-
-    if (!story) {
-      return res.status(404).json({ msg: 'Story not found' });
-    }
-
-    // Update lastActive timestamp for the child
-    const childProfile = await ChildProfile.findById(story.childId._id);
-    if (childProfile) {
-      childProfile.lastActive = Date.now();
-      await childProfile.save();
-    }
-
-    res.json(story);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
-  }
-};
+module.exports = { generateStory, saveStory, getStories };

@@ -10,7 +10,6 @@ import Register from './pages/Register';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
 import Pricing from './pages/Pricing';
-import StoryPlayer from './pages/StoryPlayer';
 
 const App = () => {
   return (
@@ -26,7 +25,6 @@ const App = () => {
             <Route path="/video" element={<VideoPage />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/story/:id" element={<StoryPlayer />} />
           </Route>
         </Routes>
       </Layout>
