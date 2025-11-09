@@ -1,3 +1,5 @@
+const julesAPI = require('../config/julesConfig');
+
 // @desc    Generate a video from story text and audio
 // @route   POST /api/video/generate-video
 // @access  Private
@@ -5,15 +7,14 @@ const generateVideo = async (req, res) => {
   const { storyText, audioUrl, childName, age } = req.body;
 
   try {
-    // In a real application, you would:
-    // 1. Call the Pexels/Unsplash API to get background visuals based on the story.
-    // 2. Use a video generation library (like ffmpeg) to combine the visuals, audio, and text.
-    // 3. Add an intro animation with the child's name and age.
-    // For now, we'll just return a placeholder video URL.
-    const videoUrl = `/uploads/videos/placeholder-${childName}.mp4`;
+    const response = await julesAPI.post('/videos/generate', {
+      storyText,
+      audioUrl,
+      childName,
+      age,
+    });
 
-    console.log(`Generating video for ${childName}, age ${age}`);
-
+    const { videoUrl } = response.data;
     res.json({ videoUrl });
   } catch (error) {
     res.status(500).json({ message: error.message });
