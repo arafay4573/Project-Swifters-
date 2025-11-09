@@ -1,11 +1,12 @@
 import React, { createContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
@@ -16,32 +17,28 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
-
-    const { data } = await axios.post('/api/auth/login', { email, password }, config);
-
-    if (data) {
-      localStorage.setItem('userInfo', JSON.stringify(data));
-      setUser(data);
+    try {
+      setError(null);
+      const { data } = await api.post('/auth/login', { email, password });
+      if (data) {
+        localStorage.setItem('userInfo', JSON.stringify(data));
+        setUser(data);
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || 'Something went wrong');
     }
   };
 
   const register = async (name, email, password) => {
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
-
-    const { data } = await axios.post('/api/auth/register', { name, email, password }, config);
-
-    if (data) {
-      localStorage.setItem('userInfo', JSON.stringify(data));
-      setUser(data);
+    try {
+      setError(null);
+      const { data } = await api.post('/auth/register', { name, email, password });
+      if (data) {
+        localStorage.setItem('userInfo', JSON.stringify(data));
+        setUser(data);
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || 'Something went wrong');
     }
   };
 

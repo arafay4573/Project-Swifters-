@@ -1,14 +1,17 @@
 import React from 'react';
-import axios from 'axios';
+import api from '../api';
 
 const Pricing = () => {
   const handleUpgrade = async () => {
     try {
-      const { data } = await axios.post('/api/paddle/create-checkout-session', {
-        priceId: process.env.REACT_APP_PADDLE_PRICE_ID,
+      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+      const token = userInfo ? userInfo.token : null;
+
+      const { data } = await api.post('/paddle/create-checkout-session', {
+        priceId: import.meta.env.VITE_PADDLE_PRICE_ID,
       }, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
