@@ -6,7 +6,7 @@ const authRoutes = require('./routes/authRoutes');
 const storyRoutes = require('./routes/storyRoutes');
 const audioRoutes = require('./routes/audioRoutes');
 const videoRoutes = require('./routes/videoRoutes');
-const stripeRoutes = require('./routes/stripeRoutes');
+const paddleRoutes = require('./routes/paddleRoutes');
 
 dotenv.config();
 
@@ -23,7 +23,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/stories', storyRoutes);
 app.use('/api/audio', audioRoutes);
 app.use('/api/video', videoRoutes);
-app.use('/api/stripe', stripeRoutes);
+app.use('/api/paddle', paddleRoutes);
 
 app.get('/', (req, res) => {
   res.send('Welcome to Project Swifters API');

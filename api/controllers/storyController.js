@@ -1,9 +1,5 @@
 const Story = require('../models/Story');
-const OpenAI = require('openai');
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const julesAPI = require('../config/julesConfig');
 
 // @desc    Generate a new story
 // @route   POST /api/stories/generate-story
@@ -12,11 +8,15 @@ const generateStory = async (req, res) => {
   const { childName, age, gender, interests, mood } = req.body;
 
   try {
-    // In a real application, you would call an AI API here.
-    // For now, we'll just generate a placeholder story.
-    const storyText = `Once upon a time, in a magical land, there lived a brave ${gender} named ${childName}. ${childName} was ${age} years old and loved ${interests.join(', ')}. One day, ${childName} went on a ${mood} adventure and discovered a hidden treasure.`;
-    const moral = "The moral of the story is to always be brave and kind.";
+    const response = await julesAPI.post('/stories/generate', {
+      childName,
+      age,
+      gender,
+      interests,
+      mood,
+    });
 
+    const { storyText, moral } = response.data;
     res.json({ storyText, moral });
   } catch (error) {
     res.status(500).json({ message: error.message });

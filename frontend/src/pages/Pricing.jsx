@@ -1,6 +1,25 @@
 import React from 'react';
+import axios from 'axios';
 
 const Pricing = () => {
+  const handleUpgrade = async () => {
+    try {
+      const { data } = await axios.post('/api/paddle/create-checkout-session', {
+        priceId: process.env.REACT_APP_PADDLE_PRICE_ID,
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+      }
+    } catch (error) {
+      console.error('Failed to create Paddle checkout session', error);
+    }
+  };
+
   return (
     <div className="text-center py-16">
       <h1 className="text-4xl font-bold mb-8 text-primary">Choose Your Plan</h1>
@@ -22,7 +41,10 @@ const Pricing = () => {
             <li>All voice options</li>
             <li>Video downloads</li>
           </ul>
-          <button className="mt-8 bg-primary text-dark-bg px-8 py-3 rounded-lg font-semibold hover:bg-opacity-80 transition-all shadow-glow-primary">
+<button
+  className="mt-8 bg-primary text-dark-bg px-8 py-3 rounded-lg font-semibold hover:bg-opacity-80 transition-all shadow-glow-primary"
+  onClick={handleUpgrade}
+>
             Upgrade to Pro
           </button>
         </div>
