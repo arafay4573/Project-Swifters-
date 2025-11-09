@@ -35,7 +35,7 @@ const createCheckoutSession = async (req, res) => {
 // @access  Public
 const handleWebhook = async (req, res) => {
   const signature = req.headers['paddle-signature'];
-  const rawRequestBody = req.body.toString();
+  const rawRequestBody = req.body;
   const secretKey = process.env.PADDLE_WEBHOOK_SECRET;
 
   try {

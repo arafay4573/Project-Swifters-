@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext } from 'react';
-import axios from 'axios';
+import api from '../api';
 import AuthContext from './AuthContext';
 
 const StoryContext = createContext();
@@ -19,7 +19,7 @@ export const StoryProvider = ({ children }) => {
         },
       };
 
-      const { data } = await axios.post('/api/stories/generate-story', formData, config);
+      const { data } = await api.post('/stories/generate-story', formData, config);
       setStory(data);
     } catch (error) {
       console.error(error);
